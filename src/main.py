@@ -8,3 +8,6 @@ load_dotenv()
 secret_key = os.getenv("API_SECRET_KEY")
 
 print(f"Using API key: {secret_key}")
+
+loader = PyPDFLoader(DOC_PATH)
+pages = loader.load()
