@@ -32,18 +32,20 @@
    API_SECRET_KEY="your-openai-api-key"
    ```
 
+4. Run `pip install -r requirements.txt`
+
 ## Run the Script
 
 Run the application with:
 
 ```bash
-python main.py
+python src/main.py
 ```
 
 If your system uses `python3` instead of `python`, run:
 
 ```bash
-python3 main.py
+python3 src/main.py
 ```
 
 ## Notes
