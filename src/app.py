@@ -17,8 +17,17 @@ st.title("Chat With Your PDF")
 # Access the hidden variables
 OPENAI_API_KEY = os.getenv("API_SECRET_KEY")
 
-loader = PyPDFLoader("./data/alphabet_10K_2022.pdf")
-pages = loader.load()
+uploaded_file = st.file_uploader(
+    "Upload a PDF",
+    type="pdf"
+)
+
+if uploaded_file:
+    with open("uploaded_file.pdf", "wb") as f:
+        f.write(uploaded_file.getbuffer())
+
+    loader = PyPDFLoader("uploaded_file.pdf")
+    pages = loader.load()
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 chunks = text_splitter.split_documents(pages)
