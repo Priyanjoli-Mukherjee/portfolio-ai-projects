@@ -52,24 +52,46 @@ query = st.text_input(
     "Ask a question about your PDF"
 )
 
-docs_chroma = db_chroma.similarity_search_with_score(query, k=5)
+if query:
 
-context_text = "\n\n".join([doc.page_content for doc, _score in docs_chroma])
+    docs_chroma = db_chroma.similarity_search_with_score(
+        query,
+        k=5
+    )
 
-PROMPT_TEMPLATE = """
-Answer the question based only on the following context:
-{context}
-Answer the question based on the above context: {question}.
-Provide a detailed answer.
-Don’t justify your answers.
-Don’t give information not mentioned in the CONTEXT INFORMATION.
-Do not say "according to the context" or "mentioned in the context" or similar.
-"""
+    context_text = "\n\n".join(
+        [doc.page_content for doc, _score in docs_chroma]
+    )
 
-prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
-prompt = prompt_template.format(context=context_text, question=query)
+    PROMPT_TEMPLATE = """
+    Answer the question based only on the following context:
+    {context}
 
-model = ChatOpenAI(openai_api_key=OPENAI_API_KEY)
-response_text = model.predict(prompt)
+    Answer the question based on the above context:
+    {question}.
 
-print(response_text)
+    Provide a detailed answer.
+
+    Don’t justify your answers.
+
+    Don’t give information not mentioned in the CONTEXT INFORMATION.
+
+    Do not say "according to the context".
+    """
+
+    prompt_template = ChatPromptTemplate.from_template(
+        PROMPT_TEMPLATE
+    )
+
+    prompt = prompt_template.format(
+        context=context_text,
+        question=query
+    )
+
+    model = ChatOpenAI(
+        openai_api_key=OPENAI_API_KEY
+    )
+
+    response_text = model.predict(prompt)
+
+    st.write(response_text)
