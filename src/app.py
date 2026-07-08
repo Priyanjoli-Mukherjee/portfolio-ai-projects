@@ -48,7 +48,9 @@ if uploaded_file:
         persist_directory="./chroma_db"
     )
 
-query = 'what are the top risks mentioned in the document?'
+query = st.text_input(
+    "Ask a question about your PDF"
+)
 
 docs_chroma = db_chroma.similarity_search_with_score(query, k=5)
 
