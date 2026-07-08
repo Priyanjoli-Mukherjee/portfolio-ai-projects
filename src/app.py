@@ -29,12 +29,24 @@ if uploaded_file:
     loader = PyPDFLoader("uploaded_file.pdf")
     pages = loader.load()
 
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-chunks = text_splitter.split_documents(pages)
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=500,
+        chunk_overlap=50
+    )
 
-embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
+    chunks = text_splitter.split_documents(pages)
 
-db_chroma = Chroma.from_documents(chunks, embeddings, persist_directory="./chroma_db")
+
+    embeddings = OpenAIEmbeddings(
+        openai_api_key=OPENAI_API_KEY
+    )
+
+
+    db_chroma = Chroma.from_documents(
+        chunks,
+        embeddings,
+        persist_directory="./chroma_db"
+    )
 
 query = 'what are the top risks mentioned in the document?'
 
