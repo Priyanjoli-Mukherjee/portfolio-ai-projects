@@ -51,8 +51,8 @@ if uploaded_file:
         persist_directory="./chroma_db"
     )
 
-query = st.text_input(
-    "Ask a question about your PDF"
+query = st.chat_input(
+    "Ask a question..."
 )
 
 if query:
