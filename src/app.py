@@ -15,6 +15,9 @@ load_dotenv()
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+if "db" not in st.session_state:
+    st.session_state.db = None
+
 st.title("Chat With Your PDF")
 
 # Access the hidden variables
@@ -25,7 +28,9 @@ uploaded_file = st.file_uploader(
     type="pdf"
 )
 
-if uploaded_file and not db_chroma:
+db_chroma = st.session_state.db
+
+if uploaded_file and db_chroma is None:
     with open("uploaded_file.pdf", "wb") as f:
         f.write(uploaded_file.getbuffer())
 
@@ -51,14 +56,11 @@ if uploaded_file and not db_chroma:
         persist_directory="./chroma_db"
     )
 
+    st.session_state.db = db_chroma
+
 query = st.chat_input(
     "Ask a question..."
 )
-
-for message in st.session_state.messages:
-
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
 
 if query:
     
@@ -112,6 +114,10 @@ if query:
     st.session_state.messages.append(
     {
         "role": "assistant",
-        "content": response
+        "content": response_text
     }
 )
+
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
