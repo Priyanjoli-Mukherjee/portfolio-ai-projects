@@ -25,7 +25,7 @@ uploaded_file = st.file_uploader(
     type="pdf"
 )
 
-if uploaded_file:
+if uploaded_file and not db_chroma:
     with open("uploaded_file.pdf", "wb") as f:
         f.write(uploaded_file.getbuffer())
 
@@ -109,4 +109,9 @@ if query:
 
     response_text = model.predict(prompt)
 
-    st.write(response_text)
+    st.session_state.messages.append(
+    {
+        "role": "assistant",
+        "content": response
+    }
+)
