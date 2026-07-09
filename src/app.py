@@ -61,6 +61,13 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 if query:
+    
+    st.session_state.messages.append(
+    {
+        "role": "user",
+        "content": query
+    }
+    )
 
     docs_chroma = db_chroma.similarity_search_with_score(
         query,
