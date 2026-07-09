@@ -23,9 +23,10 @@ st.title("Chat With Your PDF")
 # Access the hidden variables
 OPENAI_API_KEY = os.getenv("API_SECRET_KEY")
 
-uploaded_file = st.file_uploader(
-    "Upload a PDF",
-    type="pdf"
+uploaded_files = st.file_uploader(
+    "Upload PDFs",
+    type="pdf",
+    accept_multiple_files=True
 )
 
 db_chroma = st.session_state.db
