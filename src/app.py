@@ -12,6 +12,9 @@ from langchain.chat_models import ChatOpenAI
 # Load the values from the .env file into the environment
 load_dotenv()
 
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
 st.title("Chat With Your PDF")
 
 # Access the hidden variables
