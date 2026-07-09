@@ -55,6 +55,11 @@ query = st.chat_input(
     "Ask a question..."
 )
 
+for message in st.session_state.messages:
+
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
 if query:
 
     docs_chroma = db_chroma.similarity_search_with_score(
