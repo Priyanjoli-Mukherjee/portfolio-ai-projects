@@ -35,8 +35,17 @@ if uploaded_file and db_chroma is None:
     with open("uploaded_file.pdf", "wb") as f:
         f.write(uploaded_file.getbuffer())
 
-    loader = PyPDFLoader("uploaded_file.pdf")
-    pages = loader.load()
+    all_pages = []
+
+    for uploaded_file in uploaded_files:
+
+        with open(uploaded_file.name, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+
+        loader = PyPDFLoader(uploaded_file.name)
+        pages = loader.load()
+
+        all_pages.extend(pages)
 
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=500,
