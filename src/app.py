@@ -52,7 +52,7 @@ if uploaded_file and db_chroma is None:
         chunk_overlap=50
     )
 
-    chunks = text_splitter.split_documents(pages)
+    chunks = text_splitter.split_documents(all_pages)
 
 
     embeddings = OpenAIEmbeddings(
