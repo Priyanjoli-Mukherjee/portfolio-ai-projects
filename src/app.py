@@ -1,6 +1,9 @@
 import os
 import streamlit as st
 
+import tempfile
+import uuid
+
 from langchain_community.document_loaders import PyPDFLoader
 from dotenv import load_dotenv
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -23,7 +26,7 @@ st.title("Chat With Your PDF")
 # Access the hidden variables
 OPENAI_API_KEY = os.getenv("API_SECRET_KEY")
 
-uploaded_files = st.file_uploader(
+uploaded_pdfs = st.file_uploader(
     "Upload PDFs",
     type="pdf",
     accept_multiple_files=True
@@ -31,21 +34,20 @@ uploaded_files = st.file_uploader(
 
 db_chroma = st.session_state.db
 
-if uploaded_file and db_chroma is None:
-    with open("uploaded_file.pdf", "wb") as f:
-        f.write(uploaded_file.getbuffer())
+if uploaded_pdfs and db_chroma is None:
 
     all_pages = []
 
-    for uploaded_file in uploaded_files:
+    for uploaded_file in uploaded_pdfs:
 
-        with open(uploaded_file.name, "wb") as f:
-            f.write(uploaded_file.getbuffer())
+        with tempfile.NamedTemporaryFile(suffix=".pdf") as tmp:
+            tmp.write(uploaded_file.getbuffer())
+            tmp_path = tmp.name
 
-        loader = PyPDFLoader(uploaded_file.name)
-        pages = loader.load()
+            loader = PyPDFLoader(tmp_path)
+            pages = loader.load()
 
-        all_pages.extend(pages)
+            all_pages.extend(pages)
 
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=500,
@@ -63,7 +65,7 @@ if uploaded_file and db_chroma is None:
     db_chroma = Chroma.from_documents(
         chunks,
         embeddings,
-        persist_directory="./chroma_db"
+        persist_directory=f"./chroma_db/{uuid.uuid4()}"
     )
 
     st.session_state.db = db_chroma
@@ -81,6 +83,10 @@ if query:
     }
     )
 
+    if db_chroma is None:
+        st.warning("Please upload one or more PDFs first.")
+        st.stop()
+        
     docs_chroma = db_chroma.similarity_search_with_score(
         query,
         k=5
