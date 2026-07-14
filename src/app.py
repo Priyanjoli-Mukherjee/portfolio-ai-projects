@@ -34,7 +34,7 @@ uploaded_pdfs = st.file_uploader(
 
 db_chroma = st.session_state.db
 
-if uploaded_pdfs and db_chroma is None:
+if uploaded_pdfs:
 
     all_pages = []
 
@@ -47,6 +47,10 @@ if uploaded_pdfs and db_chroma is None:
             loader = PyPDFLoader(tmp_path)
             pages = loader.load()
 
+            # Add the uploaded filename to every page
+            for page in pages:
+                page.metadata["source_pdf"] = uploaded_file.name
+
             all_pages.extend(pages)
 
     text_splitter = RecursiveCharacterTextSplitter(
@@ -56,11 +60,19 @@ if uploaded_pdfs and db_chroma is None:
 
     chunks = text_splitter.split_documents(all_pages)
 
+    st.write(f"Total chunks: {len(chunks)}")
+
+    sources = {}
+
+    for chunk in chunks:
+        source = chunk.metadata["source_pdf"]
+        sources[source] = sources.get(source, 0) + 1
+
+    st.write(sources)
 
     embeddings = OpenAIEmbeddings(
         openai_api_key=OPENAI_API_KEY
     )
-
 
     db_chroma = Chroma.from_documents(
         chunks,
