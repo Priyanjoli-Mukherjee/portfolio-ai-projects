@@ -60,16 +60,6 @@ if uploaded_pdfs:
 
     chunks = text_splitter.split_documents(all_pages)
 
-    st.write(f"Total chunks: {len(chunks)}")
-
-    sources = {}
-
-    for chunk in chunks:
-        source = chunk.metadata["source_pdf"]
-        sources[source] = sources.get(source, 0) + 1
-
-    st.write(sources)
-
     embeddings = OpenAIEmbeddings(
         openai_api_key=OPENAI_API_KEY
     )
