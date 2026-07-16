@@ -138,14 +138,11 @@ if query:
         with st.spinner("Thinking..."):
             response_text = model.predict(prompt)
 
-    st.markdown(response_text)
+        st.markdown(response_text)
 
     st.session_state.messages.append(
-    {
-        "role": "assistant",
-        "content": response_text
-    }
-    )
-
-    with st.chat_message("assistant"):
-        st.markdown(response_text)
+        {
+            "role": "assistant",
+            "content": response_text
+        }
+)
