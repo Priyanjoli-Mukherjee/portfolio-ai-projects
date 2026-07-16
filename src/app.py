@@ -136,7 +136,8 @@ if query:
 
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
-            response_text = model.predict(prompt)
+            response = model.invoke(prompt)
+            response_text = response.content
 
         st.markdown(response_text)
 
