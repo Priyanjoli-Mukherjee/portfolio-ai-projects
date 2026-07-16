@@ -134,7 +134,11 @@ if query:
         openai_api_key=OPENAI_API_KEY
     )
 
-    response_text = model.predict(prompt)
+    with st.chat_message("assistant"):
+        with st.spinner("Thinking..."):
+            response_text = model.predict(prompt)
+
+    st.markdown(response_text)
 
     st.session_state.messages.append(
     {
