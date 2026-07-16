@@ -76,6 +76,10 @@ query = st.chat_input(
     "Ask a question..."
 )
 
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
 if query:
     
     st.session_state.messages.append(
@@ -84,6 +88,9 @@ if query:
         "content": query
     }
     )
+
+    with st.chat_message("user"):
+        st.markdown(query)
 
     if db_chroma is None:
         st.warning("Please upload one or more PDFs first.")
@@ -134,8 +141,7 @@ if query:
         "role": "assistant",
         "content": response_text
     }
-)
+    )
 
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+    with st.chat_message("assistant"):
+        st.markdown(response_text)
