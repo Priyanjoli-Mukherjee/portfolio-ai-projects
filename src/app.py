@@ -1,4 +1,5 @@
 import os
+import hashlib
 import streamlit as st
 
 import tempfile
@@ -21,6 +22,20 @@ if "messages" not in st.session_state:
 if "db" not in st.session_state:
     st.session_state.db = None
 
+if "pdf_hash" not in st.session_state:
+    st.session_state.pdf_hash = None
+
+def get_pdf_hash(uploaded_files):
+    hasher = hashlib.sha256()
+
+    # Sort so upload order doesn't matter
+    for pdf in sorted(uploaded_files, key=lambda f: f.name):
+        pdf.seek(0)
+        hasher.update(pdf.read())
+        pdf.seek(0)
+
+    return hasher.hexdigest()
+
 st.title("Chat With Your PDF")
 
 # Access the hidden variables
@@ -32,9 +47,17 @@ uploaded_pdfs = st.file_uploader(
     accept_multiple_files=True
 )
 
-db_chroma = st.session_state.db
+current_hash = None
 
 if uploaded_pdfs:
+    current_hash = get_pdf_hash(uploaded_pdfs)
+
+db_chroma = st.session_state.db
+
+if (
+    uploaded_pdfs
+    and current_hash != st.session_state.pdf_hash
+    ):
 
     all_pages = []
 
@@ -71,6 +94,7 @@ if uploaded_pdfs:
     )
 
     st.session_state.db = db_chroma
+    st.session_state.pdf_hash = current_hash
 
 query = st.chat_input(
     "Ask a question..."
