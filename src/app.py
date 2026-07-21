@@ -1,4 +1,5 @@
 import os
+import shutil
 import hashlib
 import streamlit as st
 
@@ -24,6 +25,9 @@ if "db" not in st.session_state:
 
 if "pdf_hash" not in st.session_state:
     st.session_state.pdf_hash = None
+
+if "chroma_dir" not in st.session_state:
+    st.session_state.chroma_dir = None
 
 def get_pdf_hash(uploaded_files):
     hasher = hashlib.sha256()
@@ -59,6 +63,12 @@ if (
     and current_hash != st.session_state.pdf_hash
     ):
 
+    if (
+        st.session_state.chroma_dir
+        and os.path.exists(st.session_state.chroma_dir)
+    ):
+        shutil.rmtree(st.session_state.chroma_dir)
+
     all_pages = []
 
     for uploaded_file in uploaded_pdfs:
@@ -87,14 +97,17 @@ if (
         openai_api_key=OPENAI_API_KEY
     )
 
+    persist_directory = f"./chroma_db/{uuid.uuid4()}"
+
     db_chroma = Chroma.from_documents(
         chunks,
         embeddings,
-        persist_directory=f"./chroma_db/{uuid.uuid4()}"
+        persist_directory=persist_directory
     )
 
     st.session_state.db = db_chroma
     st.session_state.pdf_hash = current_hash
+    st.session_state.chroma_dir = persist_directory
 
 query = st.chat_input(
     "Ask a question..."
