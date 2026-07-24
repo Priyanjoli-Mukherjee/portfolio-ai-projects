@@ -9,10 +9,9 @@ import uuid
 from langchain_community.document_loaders import PyPDFLoader
 from dotenv import load_dotenv
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores import Chroma
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_chroma import Chroma
 from langchain.prompts import ChatPromptTemplate
-from langchain.chat_models import ChatOpenAI
 
 # Load the values from the .env file into the environment
 load_dotenv()
